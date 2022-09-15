@@ -47,7 +47,6 @@ class UserController extends Controller
             return response()->json(['status' => 1, 'user' => $user]);
         }
         catch(\Exception $e){
-            return $e;
             return response()->json([
                 'status' => 2,
                 'message' => 'Failed to register your company',
@@ -64,6 +63,7 @@ class UserController extends Controller
         try{
             $user = User::where('email', $request->email)->first();
             if(password_verify($request->password, $user->password)){
+                auth()->attempt(['email' => $request->email, 'password' => $request->password]);
                 return response()->json(['status' => 1, 'user' => $user]);
             }
             else{
@@ -96,15 +96,7 @@ class UserController extends Controller
                 'message' => 'User does not exist',
             ]);
         }
-        if($user->is_admin == 1){
-            return response()->json(['status' => 1, 'user' => $user]);
-        }
-        else{
-            return response()->json([
-                'status' => 2,
-                'message' => 'You do not have permissions to do this',
-            ]);
-        }
+        return response()->json(['status' => 1, 'user' => $user]);
     }
 
 
